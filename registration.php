@@ -1,38 +1,19 @@
 <?php
-require_once('db.php');
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST["username"];
+    $password = $_POST["password"];
 
-if (isset($_COOKIE['User'])) {
-    header('Location: greet.php');
-    exit;
-}
+    $users = json_decode(file_get_contents("users.json"), true);
+    $users[$username] = $password;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
-
-    if (!$username || !$password) die("Input all parameters");
-
-    // РЎРѕС…СЂР°РЅСЏРµРј РїР°СЂРѕР»СЊ РІ РѕС‚РєСЂС‹С‚РѕРј РІРёРґРµ (СѓРјС‹С€Р»РµРЅРЅРѕ СѓСЏР·РІРёРјРѕ)
-    $sql = "INSERT INTO users (username, pass) VALUES ('$username', '$password')";
-    mysqli_query($link, $sql);
-    header("Location: login.php");
+    file_put_contents("users.json", json_encode($users));
+    echo "Регистрация успешна! <a href='login.php'>Войти</a>";
     exit;
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Registration</title>
-</head>
-<body>
-<h2>Р РµРіРёСЃС‚СЂР°С†РёСЏ</h2>
 <form method="POST">
-    <input type="text" name="username" placeholder="РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ" required><br>
-    <input type="password" name="password" placeholder="РџР°СЂРѕР»СЊ" required><br>
-    <button type="submit">Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ</button>
+    <h2>Регистрация</h2>
+    <input name="username" placeholder="Логин" required><br>
+    <input name="password" placeholder="Пароль" required><br>
+    <button type="submit">Зарегистрироваться</button>
 </form>
-<p>РЈР¶Рµ РµСЃС‚СЊ Р°РєРєР°СѓРЅС‚? <a href="login.php">Р’РѕР№С‚Рё</a></p>
-</body>
-</html>
